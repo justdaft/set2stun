@@ -20,7 +20,7 @@
     "app/boot.ts",
     "app/game.component.ts",
     "app/fazer.ts",
-    "typings/tsd.d.ts"
+    "typings/main.d.ts"
   ],
   "atom": {
     "rewriteTsconfig": true
