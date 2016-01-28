@@ -1,9 +1,8 @@
 {
-  "name": "angular2-tour-of-heroes",
+  "name": "set2stun",
   "version": "0.0.1",
   "scripts": {
-    "tslint": "tslint -c tslint.json app/**/*.ts",
-    "postinstall": "tsd install"
+    "tslint": "tslint -c tslint.json app/**/*.ts"
   },
   "dependencies": {
     "angular2": "^2.0.0-beta.0",
@@ -22,7 +21,6 @@
     "gulp-tslint": "^3.6.0",
     "gulp-typescript": "^2.8.0",
     "tsconfig-glob": "^0.3.3",
-    "tsd": "^0.6.5",
     "tslint": "^3.2.1",
     "typescript": "^1.7.3"
   }

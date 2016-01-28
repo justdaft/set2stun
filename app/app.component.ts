@@ -16,5 +16,5 @@ import {GameComponent} from './game.component';
   `]
 })
 export class AppComponent {
-  public title = 'Fazer';
+  public title = 'set2stun';
 }
