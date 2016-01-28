@@ -13,6 +13,7 @@
   },
   "filesGlob": [
     "app/**/*.ts",
+    "app/**/**/*.ts",
     "typings/**/*.d.ts"
   ],
   "files": [
@@ -20,8 +21,11 @@
     "app/boot.ts",
     "app/fazer.ts",
     "app/game.component.ts",
-    "app/matching_pairs/matching_pairs.ts",
-    "typings/main.d.ts"
+    "app/matching_pairs.ts",
+    "typings/main.d.ts",
+    "typings/p2.d.ts",
+    "typings/phaser.d.ts",
+    "typings/pixi.d.ts"
   ],
   "atom": {
     "rewriteTsconfig": true

@@ -1,7 +1,7 @@
 
 import {Component} from 'angular2/core';
 // import {Fazer} from './fazer';
-import {MatchingPairs} from './matching_pairs/matching_pairs';
+import {MatchingPairs} from './matching_pairs';
 
 @Component({
     selector: 'my-game',
