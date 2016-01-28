@@ -50,7 +50,7 @@ export class MatchingPairs {
         this.startList = RandomizeTiles();
         console.log('this.startList', this.startList);
         this.shuffledList = Phaser.ArrayUtils.shuffle(this.startList);
-        console.log('this.startList', this.startList);
+        console.log('this.shuffledList', this.shuffledList);
         for (let col = 0; col < 6; col++) {
             for (let row = 0; row < 6; row++) {
                 this.map.putTile(36, col, row);
@@ -67,7 +67,7 @@ export class MatchingPairs {
             console.log('flipped');
         };
         }
-        flip = () => {
+        let flip = () => {
             flipBack();
             console.log('flipped');
         };
@@ -109,4 +109,43 @@ function flipBack() {
     this.map.putTile(this.tileBack, this.savedSquareX1, this.savedSquareY1);
     this.map.putTile(this.tileBack, this.savedSquareX2, this.savedSquareY2);
 
+}
+
+function processClick() {
+    this.currentTile = this.map.getTile(this.layer.getTileX(this.marker.x), this.layer.getTileY(this.marker.y));
+    this.currentTilePosition = ((this.layer.getTileY(
+        this.game.input.activePointer.worldY) + 1 ) * 6 ) - ( 6 - (
+            this.layer.getTileX(this.game.input.activePointer.worldX) + 1 ));
+    if (this.game.input.mousePointer.isDown) {
+        // check to make sure the tile is not already flipped
+        if (this.currentTile.index === this.tileBack) {
+            // get the corresponding item out of squareList
+                this.currentNum = this.squareList[this.currentTilePosition - 1 ];
+            flipOver();
+                this.squareCounter++;
+            // is the second tile of pair flipped?
+            if  (this.squareCounter === 2) {
+                // reset squareCounter
+                this.squareCounter = 0;
+                this.square2Num = this.currentNum;
+                // check for match
+                if ( this.square1Num ===  this.square2Num) {
+                     this.masterCounter++;
+                    if ( this.masterCounter === 18) {
+                        // go "win"
+                         this.youWin = 'Got them all!';
+                    }
+                } else {
+                     this.savedSquareX2 =  this.layer.getTileX( this.marker.x);
+                     this.savedSquareY2 =  this.layer.getTileY( this.marker.y);
+                     this.flipFlag = true;
+                     this.timeCheck =  this.game.time.totalElapsedSeconds();
+                }
+            } else {
+                 this.savedSquareX1 =  this.layer.getTileX( this.marker.x);
+                 this.savedSquareY1 =  this.layer.getTileY( this.marker.y);
+                 this.square1Num =  this.currentNum;
+            }
+        }
+    }
 }

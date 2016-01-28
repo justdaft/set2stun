@@ -22,6 +22,7 @@
     "app/game.component.ts",
     "app/matching_pairs/matching_pairs.ts",
     "typings/main.d.ts"
+  ],
   "atom": {
     "rewriteTsconfig": true
   }
