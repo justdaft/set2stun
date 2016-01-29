@@ -7,7 +7,7 @@ export class Fazer {
             create: this.create,
             preload: this.preload,
             update: this.update,
-            render: this.render,
+            render: this.render
         });
     }
 
