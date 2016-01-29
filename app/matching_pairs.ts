@@ -6,13 +6,33 @@ interface ITile {
     tilePosition?: number;
 }
 
+interface ICell {
+    x: number;
+    y: number;
+    tileID: number;
+    isFliped: boolean;
+}
+
 interface ITurn {
     firstTile?: ITile;
     secondTile?: ITile;
     tileCounter?: number;
-} 
+}
+
+interface IGameState {
+    startList?: any;
+    currentLevelTiles?: Array<ITile>;
+    currentLevelTime?: any;
+    playerName?: any;
+    cellUnderMarker?: any;
+    firstTile?: ITile;
+    secondTile?: ITile;
+    matchedPairs?: number;
+    turnCounter?: number;
+}
 
 export class MatchingPairs {
+    gameState: IGameState;
     game: Phaser.Game;
     map: Phaser.Tilemap;
     layer: Phaser.TilemapLayer;
@@ -40,6 +60,7 @@ export class MatchingPairs {
     myCountdownSeconds: number;
     currentTurn: ITurn = {};
     turnCounter: number;
+    currentTiles: Array<any>;
 
     constructor() {
         this.game = new Phaser.Game(900, 600, Phaser.AUTO, 'content', {
@@ -56,6 +77,22 @@ export class MatchingPairs {
     };
 
     create() {
+        this.currentTiles = [];
+        this.game.input.mouse.capture = true;
+        // this.game.input.onDown.add(MatchingPairs.prototype.mouseDown);
+        this.game.input.onTap.add(MatchingPairs.prototype.onTap, this);
+        this.startList = RandomizeTiles();
+        this.gameState = {
+            currentLevelTiles: this.startList,
+            currentLevelTime: 0,
+            playerName: 'Billy',
+            firstTile: null,
+            secondTile: null,
+            cellUnderMarker: null,
+            matchedPairs: 0,
+            turnCounter: 0
+        };
+
         this.myCountdownSeconds = 0;
         this.map = this.game.add.tilemap('matching');
         this.map.addTilesetImage('Desert', 'tiles');
@@ -65,7 +102,7 @@ export class MatchingPairs {
         this.marker.lineStyle(2, 0x00FF00, 1);
         this.marker.drawRect(0, 0, 100, 100);
 
-        this.startList = RandomizeTiles();
+
         console.log('this.startList', this.startList);
         this.shuffledList = Phaser.ArrayUtils.shuffle(this.startList);
 
@@ -75,6 +112,54 @@ export class MatchingPairs {
                 this.map.putTile(36, col, row);
             }
         }
+
+        // start of create gameObjectArray
+        let counter: number = 0;
+
+
+        let tileDeck = {
+            tiles: createTileList(18, this.layer),
+        };
+
+        function createTileList(sampleSize: number, layer: any): Array<any> {
+            let tileList: Array<any> = [];
+
+            let baseList: Array<any> = [];
+            for (let num = 0; num  <= ( sampleSize - 1 ); num++) {
+                baseList.push({
+                    x: 0,
+                    y: 0,
+                    tileId: num,
+                    isFliped: false,
+                });
+            }
+            for (let num = 0; num <= ( sampleSize - 1 ); num++) {
+                baseList.push({
+                    x: 0,
+                    y: 0,
+                    tileId: num,
+                    isFliped: false,
+                });
+            }
+
+            let shuffledBaseList = Phaser.ArrayUtils.shuffle(baseList);
+
+            let currentLevelTiles = shuffledBaseList.map(function (item, index) {
+                    item.x = 0;
+                    item.y = 1;
+                    item.isFliped = false;
+                    item.id = index + 1;
+                    console.log('item: ', item);
+                return item;
+            });
+
+            return tileList;
+        }
+
+
+        // end of create gameObjectArray
+
+        // console.log('currentTiles: ', this.currentTiles);
         this.turnCounter = 0;
         this.currentTile = {
             x: 0,
@@ -92,10 +177,9 @@ export class MatchingPairs {
             tileCounter: 0
         };
 
-        this.game.input.mouse.capture = true;
-        // this.game.input.onDown.add(MatchingPairs.prototype.mouseDown);
-        this.game.input.onTap.add(MatchingPairs.prototype.onTap, this);
-    };
+
+        console.log('gameState: ', this.gameState);
+    }; // end of create
 
     onTap(pointer: any, tap: any) {
         let x = this.layer.getTileX(this.game.input.activePointer.worldX) * 100;
@@ -135,10 +219,19 @@ export class MatchingPairs {
     };
 
     update() {
-        CountDownTimer(this.game);
+        // countDownTimer(this.game);
+        //let timeLimit = 120;
+        //let mySeconds = this.game.time.totalElapsedSeconds();
+        //this.myCountdownSeconds = timeLimit - mySeconds;
+        //
+        //if (this.myCountdownSeconds <= 0) {
+        //    // time is up
+        //    this.timesUp = 'Time is up!';
+        //}
         if (this.layer.getTileX(this.game.input.activePointer.worldX) <= 5) {
             this.marker.x = this.layer.getTileX(this.game.input.activePointer.worldX) * 100;
             this.marker.y = this.layer.getTileY(this.game.input.activePointer.worldY) * 100;
+
         }
         if (this.currentTile.isFliped) {
             let currentTilePosition = ((this.layer.getTileY(this.game.input.activePointer.worldY) + 1) * 6) - (6 - (this.layer.getTileX(this.game.input.activePointer.worldX) + 1));
@@ -162,7 +255,7 @@ export class MatchingPairs {
     render() {
         // this.game.debug.text(this.timesUp, 620, 208, 'rgb(0,255,0)');
         // this.game.debug.text(this.youWin, 620, 240, 'rgb(0,255,0)');
-        this.game.debug.text('Time: ' + this.myCountdownSeconds, 620, 15, 'rgb(0,255,0)');
+        this.game.debug.text('Time: ' + this.gameState.currentLevelTime, 620, 15, 'rgb(0,255,0)');
         this.game.debug.text('TileCounter: ' + this.currentTurn.tileCounter, 620, 272, 'rgb(0,255,0)');
         this.game.debug.text('Matched Pairs: ' + this.masterCounter, 620, 304, 'rgb(0,255,0)');
         this.game.debug.text('firstTile selected: ' + this.currentTurn.firstTile.tilePosition, 620, 208, 'rgb(0,255,0)');
@@ -210,16 +303,14 @@ function RandomizeTiles() {
         startList.push(num);
     }
     return startList;
-};
-
+}
 function flipOver() {
     console.log('flipOver');
     this.map.putTile(this.currentNum, this.layer.getTileX(this.marker.x), this.layer.getTileY(this.marker.y));
-};
-
+}
 function flipBack() {
     console.log('flipOver');
     this.flipFlag = false;
     this.map.putTile(this.tileBack, this.savedSquareX1, this.savedSquareY1);
     this.map.putTile(this.tileBack, this.savedSquareX2, this.savedSquareY2);
-};
+}
