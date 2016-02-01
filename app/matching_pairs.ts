@@ -72,6 +72,11 @@ export class MatchingPairs {
 
     levelArray: Array<any>;
     shuffledLevelArray: Array<any>;
+    flippedTileCounter: number;
+    unmatchedTile1: any;
+    unmatchedTile2: any;
+    flippedTilesCounter: number = 0;
+    timer: Phaser.Timer;
 
     constructor() {
         this.game = new Phaser.Game(900, 600, Phaser.AUTO, 'content', {
@@ -89,6 +94,7 @@ export class MatchingPairs {
 
     // start of create
     create() {
+        this.flippedTileCounter = 1;
         this.levelArray = [];
         this.shuffledLevelArray = [];
         this.game.input.mouse.capture = true;
@@ -112,23 +118,6 @@ export class MatchingPairs {
 
         this.shuffledLevelArray = Phaser.ArrayUtils.shuffle(this.levelArray);
         console.log('shuffledLevelArray: ', this.shuffledLevelArray);
-        // for (let i = 1; i <= 36; i++) {
-        //     let randomPosition = this.game.rnd.integerInRange(0, this.startList.length - 1);
-
-        //     let thisNumber = this.startList[randomPosition];
-        //     currentLevelArray.push(thisNumber);
-        //     let a = this.startList.indexOf(thisNumber);
-        //     this.startList.splice(a, 1);
-        // }
-        // let startList: Array<any> = [];
-        // for (let num = 1; num <= 18; num++) {
-        //     startList.push(num);
-        // }
-        // for (let num = 1; num <= 18; num++) {
-        //     startList.push(num);
-        // }
-
-        // this.shuffledList = Phaser.ArrayUtils.shuffle(this.startList);
 
         // put tile cover in place
         for (let col = 0; col < 6; col++) {
@@ -153,58 +142,47 @@ export class MatchingPairs {
     }
 
     onTap(pointer: any, tap: any) {
-        let tappedTtileX = this.layer.getTileX(this.marker.x);
-        let tappedTtileY = this.layer.getTileY(this.marker.y);
+        this.flippedTilesCounter++;
 
+        this.unmatchedTile1 = {};
+        this.unmatchedTile2 = {};
+        this.timer = this.game.time.create(false);
+        if (this.flipedTileCounter === 2) {
+                    this.timer.start();
+                    console.log('this.timer: started');
+        };
+
+        console.log('flippedTileCounter: ', this.flippedTileCounter);
+        //  Set a TimerEvent to occur after 2 seconds
+
+        let tappedTile1X = this.layer.getTileX(this.marker.x);
+        let tappedTile1Y = this.layer.getTileY(this.marker.y);
+        this.unmatchedTile1 = {
+            x: tappedTile1X,
+            y: tappedTile1Y
+        };
         let tappedPosition = ((this.layer.getTileY(this.game.input.activePointer.worldY) + 1) * 6) - (6 - (this.layer.getTileX(this.game.input.activePointer.worldX) + 1));
         console.log('tapPosition: ', tappedPosition);
 
         let hiddenTileId = this.shuffledLevelArray[tappedPosition - 1];
         console.log('hiddenTileId: ', hiddenTileId);
 
-        this.currentTile = this.map.getTile(tappedTtileX, tappedTtileY);
+        this.currentTile = this.map.getTile(tappedTile1X, tappedTile1Y);
         console.log('Hidden Tile: ', this.currentTile);
 
-        this.map.putTile(hiddenTileId, tappedTtileX, tappedTtileY);
-        // tileXY.alpha = 0.5;
-        // this.layer.dirty = true;
+        this.map.putTile(hiddenTileId, tappedTile1X, tappedTile1Y);
+
+        this.timer.loop(3000, flipBack, this);
     };
 
 } // end of class
 
-function flipOver(hiddenTileId: number, tappedTtileX: number, tappedTtileY: number) {
-    console.log('flipOver');
-    this.map.putTile(hiddenTileId, tappedTtileX, tappedTtileY);
-}
-
 function flipBack() {
     console.log('flipOver');
     this.flipFlag = false;
-    this.map.putTile(this.tileBack, this.savedSquareX1, this.savedSquareY1);
-    this.map.putTile(this.tileBack, this.savedSquareX2, this.savedSquareY2);
+    this.map.putTile(25, this.unmatchedTile1.x, this.unmatchedTile1.y);
+    // this.map.putTile(this.tileBack, tile1.x, tile1.y);
+    // this.map.putTile(this.tileBack, tile2.x, tile2.y);
+    this.flippedTilesCounter = 0;
+    this.timer.stop();
 }
-
-// function changeLayer(key: any) {
-//     switch (key.keyCode)
-//     {
-//         case Phaser.Keyboard.ONE:
-//             currentLayer = layer1;
-//             layer1.alpha = 1;
-//             layer2.alpha = 0.2;
-//             layer3.alpha = 0.2;
-//             break;
-
-//         case Phaser.Keyboard.TWO:
-//             currentLayer = layer2;
-//             layer1.alpha = 0.2;
-//             layer2.alpha = 1;
-//             layer3.alpha = 0.2;
-//             break;
-// default:
-//             currentLayer = layer2;
-//             layer1.alpha = 0.2;
-//             layer2.alpha = 1;
-//             break;
-//     }
-
-// }
