@@ -1,9 +1,16 @@
 interface ITile {
     id?: any;
+    _id?: number;
+    tileImageId?: number;
+    guid?: any;
+    isMatched?: boolean;
+    coverTileId?: number;
     x?: number;
     y?: number;
-    isFliped?: boolean;
+    isFlipped?: boolean;
     tilePosition?: number;
+    hiddenTileId?: number;
+    canFlip?: boolean;
 }
 
 interface ITileObj {
@@ -18,33 +25,7 @@ interface ITileObj {
     coverTileIndex?: number;
 }
 
-interface ICell {
-    x: number;
-    y: number;
-    tileID: number;
-    isFliped: boolean;
-}
-
-interface ITurn {
-    firstTile?: ITile;
-    secondTile?: ITile;
-    tileCounter?: number;
-}
-
-interface IGameState {
-    startList?: any;
-    currentLevelTiles?: Array<ITile>;
-    currentLevelTime?: any;
-    playerName?: any;
-    cellUnderMarker?: any;
-    firstTile?: ITile;
-    secondTile?: ITile;
-    matchedPairs?: number;
-    turnCounter?: number;
-}
-
 export class MatchingPairs {
-    gameState: IGameState;
     game: Phaser.Game;
     map: Phaser.Tilemap;
     layer: Phaser.TilemapLayer;
@@ -64,7 +45,6 @@ export class MatchingPairs {
     timesUp: any = '+';
     youWin: any = '+';
     myCountdownSeconds: number;
-    currentTurn: ITurn = {};
     turnCounter: number;
     currentTiles: Array<any>;
     tileGrid: Array<any>;
@@ -74,10 +54,12 @@ export class MatchingPairs {
     shuffledLevelArray: Array<any>;
     unmatchedTile1: any;
     unmatchedTile2: any;
-    firstFlippedTile: any;
-    secondFlippedTile: any;
+    firstFlippedTile: ITile;
+    secondFlippedTile: ITile;
     flippedTileCounter: number;
     timer: Phaser.Timer;
+    levelData: any;
+    levelDataArray: Array<ITile>;
 
     constructor() {
         this.game = new Phaser.Game(900, 600, Phaser.AUTO, 'content', {
@@ -91,10 +73,15 @@ export class MatchingPairs {
     preload() {
         this.game.load.tilemap('matching', 'app/assets/phaser_tiles.json', null, Phaser.Tilemap.TILED_JSON);
         this.game.load.image('tiles', 'app/assets/phaser_tiles.png');
+        this.game.load.text('levelData', 'app/data/level.json');
     };
 
     // start of create
     create() {
+        this.levelData = JSON.parse(this.game.cache.getText('levelData'));
+        this.levelDataArray = JSON.parse(this.game.cache.getText('levelData'));
+        console.log(this.levelData);
+        console.log(this.levelDataArray);
         this.flippedTileCounter = 0;
         this.levelArray = [];
         this.shuffledLevelArray = [];
@@ -115,6 +102,18 @@ export class MatchingPairs {
         for (let num = 1; num <= 18; num++) {
             this.levelArray.push(num);
         }
+        // for (let num = 1; num <= 18; num++) {
+        //     this.levelDataArray[num].guid = (num: number) => {return num * 33};
+        // }
+        
+        this.levelDataArray.map(function(obj: ITile, index: number){
+            let _gid = (obj._id * index) + 100;
+            return obj.guid = _gid.toString();
+        });
+        console.log(this.levelDataArray);
+        // for (let num = 1; num <= 18; num++) {
+        //     this.levelArray.push(num);
+        // }
 
 
         this.shuffledLevelArray = Phaser.ArrayUtils.shuffle(this.levelArray);
@@ -143,39 +142,43 @@ export class MatchingPairs {
     }
 
     onTap(pointer: any, tap: any) {
-        this.flippedTileCounter++;
         this.timer = this.game.time.create(true);
+        this.flippedTileCounter++;
+        console.log('flippedTileCounter: ',  this.flippedTileCounter);
         this.currentTile = {};
         let tappedPosition = ((this.layer.getTileY(this.game.input.activePointer.worldY) + 1) * 6) - (6 - (this.layer.getTileX(this.game.input.activePointer.worldX) + 1));
         console.log('tapPosition: ', tappedPosition);
-        this.currentTile = {
-            hiddenTileId: this.shuffledLevelArray[tappedPosition - 1],
-        }
+        // this.currentTile = {
+        //     hiddenTileId: this.shuffledLevelArray[tappedPosition - 1],
+        // };
         let hiddenTileId = this.shuffledLevelArray[tappedPosition - 1];
 
         if (this.flippedTileCounter === 2) {
-
-             this.map.putTile(hiddenTileId, this.firstFlippedTile.x, this.firstFlippedTile.y);
-            console.log('this.timer: started');
+            console.log('flippedTileCounter: ',  this.flippedTileCounter);
             this.secondFlippedTile = {
                 x: this.layer.getTileX(this.marker.x),
                 y: this.layer.getTileY(this.marker.y),
                 isFlipped: true
             };
-            this.currentTile = this.map.getTile(this.secondFlippedTile.x, this.secondFlippedTile.y);
+            this.map.putTile(hiddenTileId, this.secondFlippedTile.x, this.secondFlippedTile.y);
+            if (this.firstFlippedTile.hiddenTileId === this.secondFlippedTile.hiddenTileId) {
+                console.log('winner');
+            }
+            this.timer.start();
+            // this.currentTile = this.map.getTile(this.secondFlippedTile.x, this.secondFlippedTile.y);
             console.log('Hidden Tile: ', this.currentTile);
-
         } else {
+            console.log('flippedTileCounter: ',  this.flippedTileCounter);
             this.firstFlippedTile = {
                 x: this.layer.getTileX(this.marker.x),
                 y: this.layer.getTileY(this.marker.y),
                 isFlipped: true
             };
-                                this.map.putTile(hiddenTileId, this.firstFlippedTile.x, this.firstFlippedTile.y);
-            this.currentTile = this.map.getTile(this.firstFlippedTile.x, this.firstFlippedTile.y);
-            console.log('Hidden Tile: ', this.currentTile);
+            this.map.putTile(hiddenTileId, this.firstFlippedTile.x, this.firstFlippedTile.y);
+            // this.currentTile = this.map.getTile(this.firstFlippedTile.x, this.firstFlippedTile.y);
         };
-        this.timer.loop(3000, flipBack, this);
+        console.log('flippedTileCounter: ',  this.flippedTileCounter);
+        this.timer.loop(1500, flipBack, this);
     };
 
 } // end of class
@@ -185,8 +188,12 @@ function flipBack() {
     this.flipFlag = false;
     this.map.putTile(25, this.firstFlippedTile.x, this.firstFlippedTile.y);
     this.map.putTile(25, this.secondFlippedTile.x, this.secondFlippedTile.y);
-    this.flippedTilesCounter = 0;
+    console.log('flippedTileCounter: ',  this.flippedTileCounter);
+    this.flippedTileCounter = 0;
+    console.log('flippedTileCounter: ',  this.flippedTileCounter);
     this.firstFlippedTile = {};
     this.secondFlippedTile = {};
     this.timer.stop();
 }
+
+
