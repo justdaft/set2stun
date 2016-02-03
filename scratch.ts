@@ -33,3 +33,7 @@ var doubles = numbers.map(function(num) {
   return num * 2;
 });
 // doubles is now [2, 8, 18]. numbers is still [1, 4, 9]
+
+// for immutable
+
+this.newGame.get('tiles').forEach((val, i) => {console.log(i, val.get('tile').toArray());})

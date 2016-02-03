@@ -26,7 +26,8 @@ gulp.task('copy:libs', ['clean'], function() {
       'node_modules/systemjs/dist/system.src.js',
       'node_modules/rxjs/bundles/Rx.js',
       'node_modules/angular2/bundles/angular2.dev.js',
-      'lib/phaser.js'
+      'lib/phaser.js',
+      'lib/immutable.js'
     ])
     .pipe(gulp.dest('dist/lib'))
 });
@@ -58,7 +59,7 @@ gulp.task('tsconfig-glob', function () {
 });
 
 // Run browsersync for development
-gulp.task('serve', ['build'], function() {
+gulp.task('serve', ['buildTmp'], function() {
   browserSync({
     server: {
       baseDir: 'dist'
@@ -67,6 +68,8 @@ gulp.task('serve', ['build'], function() {
 
   gulp.watch(['app/**/*', 'index.html', 'styles.css'], ['buildAndReload']);
 });
+
+gulp.task('buildTmp', ['compile', 'copy:libs', 'copy:assets']);
 
 gulp.task('build', ['tslint', 'compile', 'copy:libs', 'copy:assets']);
 gulp.task('buildAndReload', ['build'], reload);

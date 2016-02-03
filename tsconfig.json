@@ -22,9 +22,12 @@
     "app/fazer.ts",
     "app/game.component.ts",
     "app/matching_pairs.ts",
+    "app/util.ts",
+    "app/game.ts",
     "typings/main.d.ts",
     "typings/p2.d.ts",
     "typings/phaser.d.ts",
+    "typings/immutable.d.ts",
     "typings/pixi.d.ts"
   ],
   "atom": {
