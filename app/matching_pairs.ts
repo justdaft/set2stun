@@ -91,25 +91,32 @@ export class MatchingPairs {
         
         // --------- start of new
         
-            this.stateHistory = [];
+        this.stateHistory = [];
 
-            let level_data = JSON.parse(this.game.cache.getText('level_data'));
-            this.gameState = Immutable.Map({
-                tiles: Immutable.List(),
-                total: 0
-            });
-            console.log('this.gameState: ', this.gameState);
-            this.stateHistory.push(this.gameState);
-            console.log('this.stateHistory: ', this.stateHistory);
+        let level_data = JSON.parse(this.game.cache.getText('level_data'));
+        this.gameState = Immutable.Map({
+            tiles: Immutable.List(),
+            total: 0
+        });
+        console.log('this.gameState: ', this.gameState);
+        this.stateHistory.push(this.gameState);
+        console.log('this.stateHistory: ', this.stateHistory);
 
-            this.gameState = this.gameState.mergeDeep({
-                tiles: level_data,
-                total: level_data.length
-            });
-            console.log('this.gameState: ', this.gameState);
+        this.gameState = this.gameState.mergeDeep({
+            tiles: level_data,
+            totalTiles: level_data.length,
+            tilesFlipped: 0,
+            playerName: 'Player 1',
+            playingTime: 0,
+            tilesMatched: 0,
+            firstTileFlipped: 0,
+            secondTileFlipped: 0,
+            turnsTaken: 0
+        });
+        console.log('this.gameState: ', this.gameState);
 
-            this.stateHistory.push(this.gameState);
-            console.log('this.stateHistory: ', this.stateHistory);
+        this.stateHistory.push(this.gameState);
+        console.log('this.stateHistory: ', this.stateHistory);
         
         // --------- end of new
 
@@ -168,43 +175,39 @@ export class MatchingPairs {
         console.log('tapPosition: ', tappedPosition);
 
         let hiddenTileId = this.shuffledLevelArray[tappedPosition - 1];
-        
-        // example var indexOfMobile = obj.get(indexOfJohn).get('phones').findIndex(phone => phone.has('mobile'))
-        // let tmpObj: any;
-        //  let result = this.gameState.get('tiles').map((tile) => {
-        //      console.log(tile.get('guid'))
-        //      tmpObj = tile;
-        //      console.log('tmpObj: ', tmpObj);
-        //     });
+
+    // {
+    //     "_id": 2,
+    //     "tileimageid": 2,
+    //     "index": 2,
+    //     "x": 0,
+    //     "y": 0,
+    //     "guid": "6o0fb7U9ekq5PXbHeny5NQ",
+    //     "ismatched": false,
+    //     "canflip": true,
+    //     "isflipped": false,
+    //     "coverid": 25
+    // },
+
+        // if (this.gameState.get('tiles').get(hiddenTileId)) {
+        //     this.stateHistory.push(this.gameState);
+        //     this.gameState = this.gameState.setIn(['tiles', hiddenTileId, 'isflipped'], true);
+        // }
+        // example for console this.gameState.get('tiles').map(function(tile){console.log(tile.get('isflipped'))})   
+
+        console.log('this.stateHistory: ', this.stateHistory);
             
-        if (this.gameState.get('tiles').get(hiddenTileId)) {
-            this.stateHistory.push(this.gameState);
-           // let tmpTile =  this.gameState.get('tiles').get(hiddenTileId).set('isflipped', true);
-          // this.gameState = this.gameState.get('tiles').get(hiddenTileId ).set('isflipped', true);
-          this.gameState = this.gameState.setIn(['tiles', hiddenTileId, 'isflipped'], true);
-          // var gameState = gameState.setIn(['tiles', 3, 'isflipped'], true)
-           //let xTile = tmpTile.set('isflipped', true);
-           //console.log('xTile: ', xTile);
-        }
-         // example for console this.gameState.get('tiles').map(function(tile){console.log(tile.get('isflipped'))})   
-          //  this.stateHistory.push(this.gameState);
-            console.log('this.stateHistory: ', this.stateHistory);
-            
-            
-        //let result = this.gameState.get('tiles').map((tile) => console.log('answer: ', tile.get('index') === '2'));
-        // let answer = obj.findIndex(person => person.get('name') === 'john')
-        
-        
         // example console.log('state1.get by index: ', state1.get('tiles').get(4).get('guid'));
         console.log('get hidden tile by id: ', this.gameState.get('tiles').get(hiddenTileId).get('guid'));
-        
-        
+
+
         if (this.flippedTileCounter === 2) {
             console.log('flippedTileCounter: ', this.flippedTileCounter);
             this.secondFlippedTile = {
                 x: this.layer.getTileX(this.marker.x),
                 y: this.layer.getTileY(this.marker.y),
-                isFlipped: true
+                isFlipped: true,
+                id: hiddenTileId
             };
             this.map.putTile(hiddenTileId, this.secondFlippedTile.x, this.secondFlippedTile.y);
             if (this.firstFlippedTile.hiddenTileId === this.secondFlippedTile.hiddenTileId) {
@@ -218,7 +221,8 @@ export class MatchingPairs {
             this.firstFlippedTile = {
                 x: this.layer.getTileX(this.marker.x),
                 y: this.layer.getTileY(this.marker.y),
-                isFlipped: true
+                isFlipped: true,
+                id: hiddenTileId
             };
             this.map.putTile(hiddenTileId, this.firstFlippedTile.x, this.firstFlippedTile.y);
             this.currentTile = this.map.getTile(this.firstFlippedTile.x, this.firstFlippedTile.y);
