@@ -170,14 +170,33 @@ export class MatchingPairs {
         let hiddenTileId = this.shuffledLevelArray[tappedPosition - 1];
         
         // example var indexOfMobile = obj.get(indexOfJohn).get('phones').findIndex(phone => phone.has('mobile'))
-        
-         let result = this.gameState.get('tiles').map((tile) => {
-             console.log(tile.get('guid'))
-            });
+        // let tmpObj: any;
+        //  let result = this.gameState.get('tiles').map((tile) => {
+        //      console.log(tile.get('guid'))
+        //      tmpObj = tile;
+        //      console.log('tmpObj: ', tmpObj);
+        //     });
+            
+        if (this.gameState.get('tiles').get(hiddenTileId)) {
+            this.stateHistory.push(this.gameState);
+           // let tmpTile =  this.gameState.get('tiles').get(hiddenTileId).set('isflipped', true);
+          // this.gameState = this.gameState.get('tiles').get(hiddenTileId ).set('isflipped', true);
+          this.gameState = this.gameState.setIn(['tiles', hiddenTileId, 'isflipped'], true);
+          // var gameState = gameState.setIn(['tiles', 3, 'isflipped'], true)
+           //let xTile = tmpTile.set('isflipped', true);
+           //console.log('xTile: ', xTile);
+        }
+         // example for console this.gameState.get('tiles').map(function(tile){console.log(tile.get('isflipped'))})   
+          //  this.stateHistory.push(this.gameState);
+            console.log('this.stateHistory: ', this.stateHistory);
+            
+            
         //let result = this.gameState.get('tiles').map((tile) => console.log('answer: ', tile.get('index') === '2'));
         // let answer = obj.findIndex(person => person.get('name') === 'john')
-        console.log('tapped: ', result);
         
+        
+        // example console.log('state1.get by index: ', state1.get('tiles').get(4).get('guid'));
+        console.log('get hidden tile by id: ', this.gameState.get('tiles').get(hiddenTileId).get('guid'));
         
         
         if (this.flippedTileCounter === 2) {
