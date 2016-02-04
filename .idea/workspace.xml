@@ -26,9 +26,12 @@
       <file leaf-file-name="matching_pairs.ts" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/app/matching_pairs.ts">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="567">
-              <caret line="185" column="32" selection-start-line="179" selection-start-column="16" selection-end-line="189" selection-end-column="17" />
-              <folding />
+            <state relative-caret-position="417">
+              <caret line="196" column="71" selection-start-line="196" selection-start-column="71" selection-end-line="196" selection-end-column="71" />
+              <folding>
+                <element signature="n#!!block;n#ITile#0" expanded="false" />
+                <element signature="n#!!block;n#ITileObj#0" expanded="false" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -86,6 +89,8 @@
             <state relative-caret-position="1095">
               <caret line="76" column="0" selection-start-line="76" selection-start-column="0" selection-end-line="76" selection-end-column="0" />
               <folding>
+                <marker date="1454491609000" expanded="true" signature="444:474" placeholder="{...}" />
+                <marker date="1454491609000" expanded="true" signature="585:710" placeholder="{...}" />
                 <marker date="1454491609000" expanded="true" signature="780:1030" placeholder="{...}" />
                 <marker date="1454491609000" expanded="true" signature="800:1030" placeholder="[...]" />
               </folding>
@@ -152,8 +157,8 @@
     </gulpfiles>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="1280" />
-    <option name="y" value="23" />
+    <option name="x" value="1037" />
+    <option name="y" value="183" />
     <option name="width" value="1280" />
     <option name="height" value="1337" />
   </component>
@@ -311,7 +316,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="1280" y="23" width="1280" height="1337" extended-state="0" />
+    <frame x="1037" y="183" width="1280" height="1337" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="Gulp" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="true" content_ui="tabs" />
@@ -354,7 +359,10 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
+          <folding>
+            <element signature="n#!!block;n#ITile#0" expanded="false" />
+            <element signature="n#!!block;n#ITileObj#0" expanded="false" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -362,7 +370,10 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
+          <folding>
+            <element signature="n#!!block;n#ITile#0" expanded="false" />
+            <element signature="n#!!block;n#ITileObj#0" expanded="false" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -404,9 +415,12 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/app/matching_pairs.ts">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="567">
-          <caret line="185" column="32" selection-start-line="179" selection-start-column="16" selection-end-line="189" selection-end-column="17" />
-          <folding />
+        <state relative-caret-position="417">
+          <caret line="196" column="71" selection-start-line="196" selection-start-column="71" selection-end-line="196" selection-end-column="71" />
+          <folding>
+            <element signature="n#!!block;n#ITile#0" expanded="false" />
+            <element signature="n#!!block;n#ITileObj#0" expanded="false" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -452,6 +466,8 @@
         <state relative-caret-position="1095">
           <caret line="76" column="0" selection-start-line="76" selection-start-column="0" selection-end-line="76" selection-end-column="0" />
           <folding>
+            <marker date="1454491609000" expanded="true" signature="444:474" placeholder="{...}" />
+            <marker date="1454491609000" expanded="true" signature="585:710" placeholder="{...}" />
             <marker date="1454491609000" expanded="true" signature="780:1030" placeholder="{...}" />
             <marker date="1454491609000" expanded="true" signature="800:1030" placeholder="[...]" />
           </folding>

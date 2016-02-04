@@ -214,7 +214,7 @@ export class MatchingPairs {
         this.timer.loop(1500, flipBack, this);
     };
 
-} 
+}
 // end of class
 
 function revealTile(game: any, tile: any) {
