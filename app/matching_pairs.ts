@@ -88,9 +88,6 @@ export class MatchingPairs {
         let {fromJS, List, Map} = Immutable;
 
         let level_1_data = JSON.parse(this.game.cache.getText('level_1_data'));
-
-        // --------- start of new
-
         this.stateHistory = [];
 
         let level_data = JSON.parse(this.game.cache.getText('level_data'));
@@ -101,23 +98,16 @@ export class MatchingPairs {
         console.log('this.gameState: ', this.gameState);
         this.stateHistory.push(this.gameState);
         console.log('this.stateHistory: ', this.stateHistory);
-
         this.gameState = this.gameState.mergeDeep({
             tiles: level_data,
             totalTiles: level_data.length,
-            tilesFlipped: 0,
             playerName: 'Player 1',
-            playingTime: 0,
-            tilesMatched: 0,
+            tilePairsMatched: 0,
             turnsTaken: 0
         });
         console.log('this.gameState: ', this.gameState);
-
         this.stateHistory.push(this.gameState);
         console.log('this.stateHistory: ', this.stateHistory);
-
-        // --------- end of new
-
         this.flippedTileCounter = 0;
         this.levelArray = [];
         this.shuffledLevelArray = [];
@@ -148,11 +138,9 @@ export class MatchingPairs {
                 this.map.putTile(36, col, row);
             }
         }
-
     };
+
     // end of create
-
-
     update() {
         if (this.layer.getTileX(this.game.input.activePointer.worldX) <= 5) {
             this.marker.x = this.layer.getTileX(this.game.input.activePointer.worldX) * 100;
@@ -167,36 +155,16 @@ export class MatchingPairs {
     onTap(pointer: any, tap: any) {
         this.timer = this.game.time.create(true);
         this.flippedTileCounter++;
-        // console.log('flippedTileCounter: ', this.flippedTileCounter);
         this.currentTile = {};
         let tappedPosition = ((this.layer.getTileY(this.game.input.activePointer.worldY) + 1) * 6) - (6 - (this.layer.getTileX(this.game.input.activePointer.worldX) + 1));
         console.log('tapPosition: ', tappedPosition);
-
         let hiddenTileId = this.shuffledLevelArray[tappedPosition - 1];
-
-        // {
-        //     "_id": 2,
-        //     "tileimageid": 2,
-        //     "index": 2,
-        //     "x": 0,
-        //     "y": 0,
-        //     "guid": "6o0fb7U9ekq5PXbHeny5NQ",
-        //     "ismatched": false,
-        //     "canflip": true,
-        //     "coverid": 25
-        // },
-
-        // if (this.gameState.get('tiles').get(hiddenTileId)) {
-        //     this.stateHistory.push(this.gameState);
-        //     this.gameState = this.gameState.setIn(['tiles', hiddenTileId, 'isflipped'], true);
-        // }
         // example for console this.gameState.get('tiles').map(function(tile){console.log(tile.get('isflipped'))})   
 
         console.log('this.stateHistory: ', this.stateHistory);
 
         // example console.log('state1.get by index: ', state1.get('tiles').get(4).get('guid'));
         console.log('get hidden tile by id: ', this.gameState.get('tiles').get(hiddenTileId).get('guid'));
-
 
         if (this.flippedTileCounter === 2) {
             console.log('flippedTileCounter: ', this.flippedTileCounter);
@@ -207,24 +175,29 @@ export class MatchingPairs {
                 id: hiddenTileId
             };
             this.map.putTile(hiddenTileId, this.secondFlippedTile.x, this.secondFlippedTile.y);
-
             this.currentTile = this.map.getTile(this.secondFlippedTile.x, this.secondFlippedTile.y);
-
             if (this.firstFlippedTile.id === this.secondFlippedTile.id) {
                 if (this.gameState.get('tiles').get(hiddenTileId)) {
                     this.stateHistory.push(this.gameState);
                     this.gameState = this.gameState.setIn(['tiles', this.firstFlippedTile.id, 'isMatched'], true);
-                    this.stateHistory.push(this.gameState);
+                    this.gameState = this.gameState.setIn(['tiles', this.firstFlippedTile.id, 'canFlip'], false);
                     this.gameState = this.gameState.setIn(['tiles', this.secondFlippedTile.id, 'isMatched'], true);
+                    this.gameState = this.gameState.setIn(['tiles', this.firstFlippedTile.id, 'canFlip'], false);
+                    this.gameState = this.gameState.update('tilePairsMatched', (v: any) => v + 1);
+                    this.gameState = this.gameState.update('turnsTaken', (v: any) => v + 1);
                     this.stateHistory.push(this.gameState);
-                    this.gameState = this.gameState.get('isMatched').update(value => value + 1);
-                    
+                    console.log('its a match!!!');
                 }
-                console.log('winner');
+            } else {
+                this.gameState = this.gameState.update('turnsTaken', (v: any) => v + 1);
+                this.stateHistory.push(this.gameState);
             }
             console.log('firstFlippedTile.Id: ', this.firstFlippedTile.id);
             console.log('secondFlippedTile.Id: ', this.secondFlippedTile.id);
+            console.log('turnsTaken: ', this.gameState.get('turnsTaken'));
+            console.log('Matched Pairs: ', this.gameState.get('tilePairsMatched'));
             console.log('Hidden Tile: ', this.currentTile);
+            this.game.input.mouse.enabled = false;
             this.timer.start();
         } else {
             console.log('flippedTileCounter: ', this.flippedTileCounter);
@@ -238,11 +211,11 @@ export class MatchingPairs {
             this.currentTile = this.map.getTile(this.firstFlippedTile.x, this.firstFlippedTile.y);
             console.log('Hidden Tile: ', this.currentTile);
         };
-        // console.log('flippedTileCounter: ', this.flippedTileCounter);
         this.timer.loop(1500, flipBack, this);
     };
 
-} // end of class
+} 
+// end of class
 
 function revealTile(game: any, tile: any) {
     // console.log(game.getIn(['tiles', tile]));
@@ -253,12 +226,13 @@ function flipBack() {
     this.flipFlag = false;
     this.map.putTile(25, this.firstFlippedTile.x, this.firstFlippedTile.y);
     this.map.putTile(25, this.secondFlippedTile.x, this.secondFlippedTile.y);
-    // console.log('flippedTileCounter: ', this.flippedTileCounter);
     this.flippedTileCounter = 0;
-    // console.log('flippedTileCounter: ', this.flippedTileCounter);
     this.firstFlippedTile = {};
     this.secondFlippedTile = {};
+    this.game.input.mouse.enabled = true;
+    this.marker.lineStyle(2, 0x00FF00, 1);
     this.timer.stop();
+
 }
 
 
