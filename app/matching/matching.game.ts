@@ -26,9 +26,7 @@ interface ITileObj {
     coverTileIndex?: number;
 }
 
-// import {revealTile, isGameOver} from './game';
-
-export class MatchingPairs {
+export class Matching {
 
     game: Phaser.Game;
     map: Phaser.Tilemap;
@@ -77,17 +75,17 @@ export class MatchingPairs {
     };
 
     preload() {
-        this.game.load.tilemap('matching', 'app/assets/phaser_tiles.json', null, Phaser.Tilemap.TILED_JSON);
-        this.game.load.image('tiles', 'app/assets/phaser_tiles.png');
-        this.game.load.text('level_1_data', 'app/data/level_1.json');
-        this.game.load.text('level_data', 'app/data/level_data.json');
+        this.game.load.tilemap('matching', 'app/matching/assets/phaser_tiles.json', null, Phaser.Tilemap.TILED_JSON);
+        this.game.load.image('tiles', 'app/matching/assets/phaser_tiles.png');
+        // this.game.load.text('level_1_data', 'app/data/level_1.json');
+        this.game.load.text('level_data', 'app/matching/data/level_data.json');
     };
 
     // start of create
     create() {
         let {fromJS, List, Map} = Immutable;
 
-        let level_1_data = JSON.parse(this.game.cache.getText('level_1_data'));
+        // let level_1_data = JSON.parse(this.game.cache.getText('level_1_data'));
         this.stateHistory = [];
 
         let level_data = JSON.parse(this.game.cache.getText('level_data'));
