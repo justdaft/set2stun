@@ -1,7 +1,7 @@
 
 import {Component} from 'angular2/core';
 // import {Fazer} from './fazer';
-import {Matching} from './matching/matching.game';
+import {MatchingGame} from './matching/matching.game';
 
 @Component({
     selector: 'my-game',
@@ -14,7 +14,7 @@ export class GameComponent {
 
     currentGame: any;
     constructor() {
-        this.currentGame = new Matching();
+        this.currentGame = new MatchingGame();
 
         console.log('constructor');
     }

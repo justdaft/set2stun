@@ -12,6 +12,7 @@ interface ITile {
     tilePosition?: number;
     hiddenTileId?: number;
     canFlip?: boolean;
+    canTap?: boolean;
 }
 
 interface ITileObj {
@@ -26,7 +27,7 @@ interface ITileObj {
     coverTileIndex?: number;
 }
 
-export class Matching {
+export class MatchingGame {
 
     game: Phaser.Game;
     map: Phaser.Tilemap;
@@ -110,7 +111,7 @@ export class Matching {
         this.levelArray = [];
         this.shuffledLevelArray = [];
         this.game.input.mouse.capture = true;
-        this.game.input.onTap.add(MatchingPairs.prototype.onTap, this);
+        this.game.input.onTap.add(MatchingGame.prototype.onTap, this);
 
         this.map = this.game.add.tilemap('matching');
         this.map.addTilesetImage('Desert', 'tiles');
@@ -175,6 +176,8 @@ export class Matching {
             this.map.putTile(hiddenTileId, this.secondFlippedTile.x, this.secondFlippedTile.y);
             this.currentTile = this.map.getTile(this.secondFlippedTile.x, this.secondFlippedTile.y);
             if (this.firstFlippedTile.id === this.secondFlippedTile.id) {
+                this.firstFlippedTile.isMatched = true;
+                this.secondFlippedTile.isMatched = true;
                 if (this.gameState.get('tiles').get(hiddenTileId)) {
                     this.stateHistory.push(this.gameState);
                     this.gameState = this.gameState.setIn(['tiles', this.firstFlippedTile.id, 'isMatched'], true);
@@ -222,13 +225,14 @@ function revealTile(game: any, tile: any) {
 function flipBack() {
     console.log('flipOver');
     this.flipFlag = false;
-    this.map.putTile(25, this.firstFlippedTile.x, this.firstFlippedTile.y);
-    this.map.putTile(25, this.secondFlippedTile.x, this.secondFlippedTile.y);
+    if (!this.firstFlippedTile.isMatched && !this.secondFlippedTile.isMatched) {
+        this.map.putTile(25, this.firstFlippedTile.x, this.firstFlippedTile.y);
+        this.map.putTile(25, this.secondFlippedTile.x, this.secondFlippedTile.y);
+    }
     this.flippedTileCounter = 0;
     this.firstFlippedTile = {};
     this.secondFlippedTile = {};
     this.game.input.mouse.enabled = true;
-    this.marker.lineStyle(2, 0x00FF00, 1);
     this.timer.stop();
 
 }
