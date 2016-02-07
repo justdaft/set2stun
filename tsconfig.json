@@ -19,16 +19,27 @@
   "files": [
     "app/app.component.ts",
     "app/boot.ts",
+    "app/devtools/rollbackaction.ts",
+    "app/devtools/statelist.ts",
+    "app/devtools/statemonitor.ts",
+    "app/devtools/stringify.ts",
     "app/fazer/fazer.ts",
     "app/game.component.ts",
-    "app/util.ts",
     "app/game.ts",
     "app/matching/matching.game.ts",
+    "app/store/actions.ts",
+    "app/store/reducer.ts",
+    "app/store/stateitem.ts",
+    "app/store/statestore.ts",
+    "app/util.ts",
+    "typings/immutable.d.ts",
     "typings/main.d.ts",
+    "typings/node-uuid/node-uuid-base.d.ts",
+    "typings/node-uuid/node-uuid-global.d.ts",
     "typings/p2.d.ts",
     "typings/phaser.d.ts",
-    "typings/immutable.d.ts",
-    "typings/pixi.d.ts"
+    "typings/pixi.d.ts",
+    "typings/redux/redux.d.ts"
   ],
   "atom": {
     "rewriteTsconfig": true

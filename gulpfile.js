@@ -7,17 +7,32 @@ const tslint = require('gulp-tslint');
 const browserSync = require('browser-sync');
 const reload = browserSync.reload;
 const tsconfig = require('tsconfig-glob');
+const fs = require('fs');
+
+
+const paths = {
+  dist: 'dist',
+  distFiles: 'dist/**/*',
+  srcFiles: 'app/**/*',
+  srcTsFiles: 'app/**/*.ts',
+}
 
 // clean the contents of the distribution directory
 gulp.task('clean', function () {
-  return del('dist/**/*');
+  return del(paths.distFiles);
 });
 
 // copy static assets - i.e. non TypeScript compiled source
+// gulp.task('copy:assets', ['clean'], function() {
+//   return gulp.src(['app/**/*', 'index.html', 'styles.css', '!app/**/*.ts'], { base : './' })
+//     .pipe(gulp.dest('dist'))
+// });
+
 gulp.task('copy:assets', ['clean'], function() {
   return gulp.src(['app/**/*', 'index.html', 'styles.css', '!app/**/*.ts'], { base : './' })
-    .pipe(gulp.dest('dist'))
+    .pipe(gulp.dest(paths.dist))
 });
+
 
 // copy dependencies
 gulp.task('copy:libs', ['clean'], function() {
@@ -27,27 +42,45 @@ gulp.task('copy:libs', ['clean'], function() {
       'node_modules/rxjs/bundles/Rx.js',
       'node_modules/angular2/bundles/angular2.dev.js',
       'lib/phaser.js',
-      'lib/immutable.js'
+      'lib/immutable.js',
+      'lib/redux.js',
+      'lib/uuid.js'
     ])
     .pipe(gulp.dest('dist/lib'))
 });
 
 // linting
-gulp.task('tslint', function() {
-  return gulp.src('app/**/*.ts')
+// gulp.task('tslint', function() {
+//   return gulp.src('app/**/*.ts')
+//     .pipe(tslint())
+//     .pipe(tslint.report('verbose'));
+// });
+gulp.task('tslint', function(){
+  return gulp.src(paths.srcTsFiles)
     .pipe(tslint())
     .pipe(tslint.report('verbose'));
 });
 
 
 // TypeScript compile
+// gulp.task('compile', ['clean'], function () {
+//   return gulp
+//     .src(tscConfig.files)
+//     .pipe(sourcemaps.init())
+//     .pipe(typescript(tscConfig.compilerOptions))
+//     .pipe(sourcemaps.write('.'))
+//     .pipe(gulp.dest('dist/app'));
+// });
+
 gulp.task('compile', ['clean'], function () {
+  // load the tsconfig each time as it changes!
+  const tscConfig = JSON.parse(fs.readFileSync('./tsconfig.json', 'UTF8'));
   return gulp
     .src(tscConfig.files)
     .pipe(sourcemaps.init())
     .pipe(typescript(tscConfig.compilerOptions))
     .pipe(sourcemaps.write('.'))
-    .pipe(gulp.dest('dist/app'));
+    .pipe(gulp.dest(paths.dist + '/app'));
 });
 
 // update the tsconfig files based on the glob pattern
@@ -62,11 +95,11 @@ gulp.task('tsconfig-glob', function () {
 gulp.task('serve', ['buildTmp'], function() {
   browserSync({
     server: {
-      baseDir: 'dist'
+      baseDir: paths.dist
     }
   });
 
-  gulp.watch(['app/**/*', 'index.html', 'styles.css'], ['buildAndReload']);
+  gulp.watch(paths.srcFiles, ['buildAndReload']);
 });
 
 gulp.task('buildTmp', ['compile', 'copy:libs', 'copy:assets']);

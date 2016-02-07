@@ -1,6 +1,6 @@
 {
   "name": "set2stun",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "scripts": {
     "tslint": "tslint -c tslint.json app/**/*.ts"
   },
@@ -12,7 +12,9 @@
     "reflect-metadata": "0.1.2",
     "rxjs": "5.0.0-beta.0",
     "zone.js": "0.5.11",
-    "immutable": "^3.7.6"
+    "immutable": "^3.7.6",
+    "node-uuid": "^1.4.7",
+    "redux": "^3.0.5"
   },
   "devDependencies": {
     "browser-sync": "^2.11.1",
