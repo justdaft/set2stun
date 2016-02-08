@@ -11,7 +11,7 @@ export interface ITile {
 }
 export interface IGameStateAction {
     type: string;
-    item?: ITile;
+    item?: any;
     itemId?: string;
     completed?: boolean;
 }

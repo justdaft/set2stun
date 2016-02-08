@@ -3,6 +3,7 @@ import StateStore from './store/statestore';
 import {ITile} from './matching.game.models';
 import StateList from './devtools/statelist';
 import {addItem, removeItem} from './store/actions';
+import {fromJS, List, Map} from 'immutable';
 
 @Component({
     selector: 'matching-game',
@@ -17,8 +18,6 @@ export class MatchingGame implements OnInit {
     currentGame: any;
     newItem = 'test';
     counter: number = 0;
-
-
     map: Phaser.Tilemap;
     layer: Phaser.TilemapLayer;
     timeCheck = 0;
@@ -27,10 +26,8 @@ export class MatchingGame implements OnInit {
     squareList: Array<any> = [];
     shuffledList: Array<any> = [];
     masterCounter: number = 0;
-
     tileset: any;
     marker: any;
-
     currentTilePosition: any;
     tileBack: number = 25;
     timesUp: any = '+';
@@ -55,6 +52,8 @@ export class MatchingGame implements OnInit {
 
     constructor(store: StateStore) {
         this.store = store;
+        this.animal = 'constructor: cat';
+        console.log(this.animal);
         this.game = new Phaser.Game(900, 600, Phaser.AUTO, 'content', {
             preload: this.preload,
             create: this.create,
@@ -63,45 +62,37 @@ export class MatchingGame implements OnInit {
         });
     };
 
+    animal: any = 'dog';
+
     ngOnInit() { 
         //
     };
 
-    preload() {
+    preload = () => {
+        this.animal = ' _preload: sheep';
+        console.log(this.animal);
         this.game.load.tilemap('matching', 'app/matching/assets/adventure_time.json', null, Phaser.Tilemap.TILED_JSON);
         // this.game.load.image('tiles', 'app/matching/assets/phaser_tiles.png');
         // this.game.load.tilemap('matching', 'app/matching/assets/phaser_tiles.json', null, Phaser.Tilemap.TILED_JSON);
         this.game.load.image('tiles', 'app/matching/assets/adventure_time.png');
         // this.game.load.text('level_1_data', 'app/data/level_1.json');
         this.game.load.text('level_data', 'app/matching/data/level_data.json');
-        this.game.load.script('filter', 'https://cdn.rawgit.com/photonstorm/phaser/master/filters/Fire.js');
-
+        // this.game.load.script('filter', 'https://cdn.rawgit.com/photonstorm/phaser/master/filters/Fire.js');
     };
 
-    create() {
+    create = () => {
+        this.animal = ' _create: mouse';
+        console.log(this.animal);
         this.background = this.game.add.sprite(600, 0);
         this.background.width = 300;
         this.background.height = 600;
-        let {fromJS, List, Map} = Immutable;
-
-        // let level_1_data = JSON.parse(this.game.cache.getText('level_1_data'));
-        this.stateHistory = [];
-
         let level_data = JSON.parse(this.game.cache.getText('level_data'));
-
         this.flippedTileCounter = 0;
         this.levelArray = [];
         this.shuffledLevelArray = [];
-
-        // for (let num = 1; num <= 18; num++) {
-        //     this.levelArray.push(num);
-        // }
-        // for (let num = 1; num <= 18; num++) {
-        //     this.levelArray.push(num);
-        // }
-
         this.shuffledLevelArray = Phaser.ArrayUtils.shuffle(level_data);
         // console.log('this.shuffledLevelArray: ', this.shuffledLevelArray);
+        this.stateHistory = [];
         this.gameState = Immutable.Map({
             tiles: Immutable.List()
         });
@@ -109,21 +100,16 @@ export class MatchingGame implements OnInit {
         console.log('this.gameState: ', this.gameState);
         this.stateHistory.push(this.gameState);
         // console.log('this.stateHistory: ', this.stateHistory);
-
         this.gameState = this.gameState.mergeDeep({
             tiles: this.shuffledLevelArray,
             playerName: 'Player 1',
             tilePairsMatched: 0,
             turnsTaken: 0
         });
-
-        // console.log('this.gameState: ', this.gameState);
+        this.addItem(this.gameState);
         this.stateHistory.push(this.gameState);
-        // console.log('this.stateHistory: ', this.stateHistory);
-
-
         this.game.input.mouse.capture = true;
-        this.game.input.onTap.add(MatchingGame.prototype.onTap, this);
+        this.game.input.onTap.add(this.onTap, this);
 
         this.map = this.game.add.tilemap('matching');
         this.map.addTilesetImage('adventure_time', 'tiles');
@@ -132,31 +118,25 @@ export class MatchingGame implements OnInit {
         this.marker = this.game.add.graphics(0, 0);
         this.marker.lineStyle(2, 0x00FF00, 1);
         this.marker.drawRect(0, 0, 100, 100);
-
-
-        // console.log('shuffledLevelArray: ', this.shuffledLevelArray);
-
-        // put tile cover in place
         for (let col = 0; col < 6; col++) {
             for (let row = 0; row < 6; row++) {
                 this.map.putTile(36, col, row);
             }
         }
-
-        this.filter = this.game.add.filter('Fire', 900, 600);
-        this.filter.alpha = 0.0;
-        this.background.filters = [this.filter];
+        // this.filter = this.game.add.filter('Fire', 900, 600);
+        // this.filter.alpha = 0.0;
+        // this.background.filters = [this.filter];
     };
 
-    update() {
+    update = () => {
         if (this.layer.getTileX(this.game.input.activePointer.worldX) <= 5) {
             this.marker.x = this.layer.getTileX(this.game.input.activePointer.worldX) * 100;
             this.marker.y = this.layer.getTileY(this.game.input.activePointer.worldY) * 100;
         }
-        this.filter.update();
+        // this.filter.update();
     };
 
-    render() {
+    render = () => {
         // this.game.debug.text(timesUp, 620, 208, 'rgb(0,255,0)');
         // game.debug.text(youWin, 620, 240, 'rgb(0,255,0)');
 
@@ -177,7 +157,7 @@ export class MatchingGame implements OnInit {
         // game.debug.text('Hidden Tile: ' + getHiddenTile(), 620, 176, 'rgb(255,0,0)');
     };
 
-    onTap(pointer: any, tap: any) {
+    onTap = (pointer: any, tap: any) => {
         this.timer = this.game.time.create(true);
         this.flippedTileCounter++;
         this.currentTile = {};
@@ -241,44 +221,27 @@ export class MatchingGame implements OnInit {
             this.currentTile = this.map.getTile(this.firstFlippedTile.x, this.firstFlippedTile.y);
             console.log('Hidden Tile, this.currentTile: ', this.currentTile);
         };
-        this.timer.loop(1500, flipBack, this);
-
-        function flipBack() {
-            console.log('flipOver');
-            this.flipFlag = false;
-            if (!this.firstFlippedTile.isMatched && !this.secondFlippedTile.isMatched) {
-                this.map.putTile(36, this.firstFlippedTile.x, this.firstFlippedTile.y);
-                this.map.putTile(36, this.secondFlippedTile.x, this.secondFlippedTile.y);
-            }
-            this.flippedTileCounter = 0;
-            this.firstFlippedTile = {};
-            this.secondFlippedTile = {};
-            this.game.input.mouse.enabled = true;
-            this.timer.stop();
-
-        };
+        this.timer.loop(1500, this.flipBack, this);
     };
 
+    flipBack = () => {
+        console.log('flipOver');
+        this.flipFlag = false;
+        if (!this.firstFlippedTile.isMatched && !this.secondFlippedTile.isMatched) {
+            this.map.putTile(36, this.firstFlippedTile.x, this.firstFlippedTile.y);
+            this.map.putTile(36, this.secondFlippedTile.x, this.secondFlippedTile.y);
+        }
+        this.flippedTileCounter = 0;
+        this.firstFlippedTile = {};
+        this.secondFlippedTile = {};
+        this.game.input.mouse.enabled = true;
+        this.timer.stop();
+    };
 
-    addItem() {
-        this.counter++;
-        let tmpItem = {
-            _id: this.counter,
-            tileImageId: this.counter,
-            x: 0,
-            y: 0,
-            uuid: uuid.v4(),
-            isMatched: false,
-            canFlip: true
-        };
-        console.log('tmpItem: ', tmpItem);
-        this.store.dispatch(addItem(tmpItem));
+    addItem = (item: any) => {
+        console.log('addItem: ', item);
+        this.store.dispatch(addItem(item));
         this.newItem = '';
     };
 
-
-
-    revealTile(game: any, tile: any) {
-        // console.log(game.getIn(['tiles', tile]));
-    };
 }
