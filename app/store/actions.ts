@@ -1,14 +1,5 @@
 import { IGameStateAction } from './reducer';
-
-interface ITile {
-    _id?: number;
-    tileImageId?: number;
-    uuid?: any;
-    isMatched?: boolean;
-    x?: number;
-    y?: number;
-    canFlip?: boolean;
-  };
+import { ITile } from '../ITile';
 
 export function addItem(item: ITile): IGameStateAction {
   return {

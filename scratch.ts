@@ -37,3 +37,5 @@ var doubles = numbers.map(function(num) {
 // for immutable
 
 this.newGame.get('tiles').forEach((val, i) => {console.log(i, val.get('tile').toArray());})
+
+http://blog.scottlogic.com/2016/01/25/angular2-time-travel-with-redux.html

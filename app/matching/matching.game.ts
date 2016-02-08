@@ -1,127 +1,52 @@
+import { ITile, IGame } from './models';
+import { addItem, removeItem } from '../store/actions';
+import StateStore from '../store/statestore';
 
-interface ITile {
-    id?: any;
-    _id?: number;
-    tileImageId?: number;
-    guid?: any;
-    isMatched?: boolean;
-    coverTileId?: number;
-    x?: number;
-    y?: number;
-    isFlipped?: boolean;
-    tilePosition?: number;
-    hiddenTileId?: number;
-    canFlip?: boolean;
-    canTap?: boolean;
-}
-
-interface ITileObj {
-    id?: any;
-    x?: number;
-    y?: number;
-    isFliped?: boolean;
-    tilePosition?: number;
-    tileRef?: number;
-    isMatched?: boolean;
-    tile?: any;
-    coverTileIndex?: number;
-}
+// interface ITile {
+//     id?: any;
+//     _id?: number;
+//     tileImageId?: number;
+//     guid?: any;
+//     isMatched?: boolean;
+//     coverTileId?: number;
+//     x?: number;
+//     y?: number;
+//     isFlipped?: boolean;
+//     tilePosition?: number;
+//     hiddenTileId?: number;
+//     canFlip?: boolean;
+//     canTap?: boolean;
+// }
 
 export class MatchingGame {
-
+    store: StateStore;
     game: Phaser.Game;
     map: Phaser.Tilemap;
     layer: Phaser.TilemapLayer;
-    timeCheck = 0;
-    flipFlag: boolean = false;
-    startList: Array<any> = [];
-    squareList: Array<any> = [];
-    shuffledList: Array<any> = [];
-    masterCounter: number = 0;
-
-    tileset: any;
     marker: any;
-    currentMarker: ITile;
     currentTile: ITile;
-    currentTilePosition: any;
-    tileBack: number = 25;
-    timesUp: any = '+';
-    youWin: any = '+';
-    myCountdownSeconds: number;
-    turnCounter: number;
-    currentTiles: Array<any>;
-    tileGrid: Array<any>;
-    tilesList: Array<ITileObj>;
-
     levelArray: Array<any>;
     shuffledLevelArray: Array<any>;
-    unmatchedTile1: any;
-    unmatchedTile2: any;
     firstFlippedTile: ITile;
     secondFlippedTile: ITile;
     flippedTileCounter: number;
     timer: Phaser.Timer;
-    levelData: any;
     stateHistory: any = [];
     gameState: any;
-    newGameState: any;
     background: any;
     filter: any;
+    counter: number = 0;
+    level_data: any;
 
-    constructor() {
+    constructor(store: StateStore) {
+        this.store = store;
         this.game = new Phaser.Game(900, 600, Phaser.AUTO, 'content', {
             create: this.create,
             preload: this.preload,
             update: this.update,
             render: this.render
         });
-    };
 
-    preload() {
-        this.game.load.tilemap('matching', 'app/matching/assets/adventure_time.json', null, Phaser.Tilemap.TILED_JSON);
-        // this.game.load.image('tiles', 'app/matching/assets/phaser_tiles.png');
-
-        // this.game.load.tilemap('matching', 'app/matching/assets/phaser_tiles.json', null, Phaser.Tilemap.TILED_JSON);
-        this.game.load.image('tiles', 'app/matching/assets/adventure_time.png');
-
-        // this.game.load.text('level_1_data', 'app/data/level_1.json');
-        this.game.load.text('level_data', 'app/matching/data/level_data.json');
-        this.game.load.script('filter', 'https://cdn.rawgit.com/photonstorm/phaser/master/filters/Fire.js');
-
-    };
-
-    // start of create
-    create() {
-        this.background = this.game.add.sprite(600, 0);
-        this.background.width = 300;
-        this.background.height = 600;
-        let {fromJS, List, Map} = Immutable;
-
-        // let level_1_data = JSON.parse(this.game.cache.getText('level_1_data'));
-        this.stateHistory = [];
-
-        let level_data = JSON.parse(this.game.cache.getText('level_data'));
-
-        this.flippedTileCounter = 0;
-        this.levelArray = [];
-        this.shuffledLevelArray = [];
-
-        // for (let num = 1; num <= 18; num++) {
-        //     this.levelArray.push(num);
-        // }
-        // for (let num = 1; num <= 18; num++) {
-        //     this.levelArray.push(num);
-        // }
-
-        this.shuffledLevelArray = Phaser.ArrayUtils.shuffle(level_data);
-        // console.log('this.shuffledLevelArray: ', this.shuffledLevelArray);
-        this.gameState = Immutable.Map({
-            tiles: Immutable.List()
-        });
-
-        console.log('this.gameState: ', this.gameState);
-        this.stateHistory.push(this.gameState);
-        // console.log('this.stateHistory: ', this.stateHistory);
 
         this.gameState = this.gameState.mergeDeep({
             tiles: this.shuffledLevelArray,
@@ -129,135 +54,162 @@ export class MatchingGame {
             tilePairsMatched: 0,
             turnsTaken: 0
         });
-
-        // console.log('this.gameState: ', this.gameState);
-        this.stateHistory.push(this.gameState);
-        // console.log('this.stateHistory: ', this.stateHistory);
-
-
-        this.game.input.mouse.capture = true;
-        this.game.input.onTap.add(MatchingGame.prototype.onTap, this);
-
-        this.map = this.game.add.tilemap('matching');
-        this.map.addTilesetImage('adventure_time', 'tiles');
-        this.layer = this.map.createLayer('TileLayer1');
-
-        this.marker = this.game.add.graphics(0, 0);
-        this.marker.lineStyle(2, 0x00FF00, 1);
-        this.marker.drawRect(0, 0, 100, 100);
-
-
-        // console.log('shuffledLevelArray: ', this.shuffledLevelArray);
-
-        // put tile cover in place
-        for (let col = 0; col < 6; col++) {
-            for (let row = 0; row < 6; row++) {
-                this.map.putTile(36, col, row);
-            }
-        }
-
-        this.filter = this.game.add.filter('Fire', 900, 600);
-        this.filter.alpha = 0.0;
-        this.background.filters = [this.filter];
     };
 
-    // end of create
-    update() {
-        if (this.layer.getTileX(this.game.input.activePointer.worldX) <= 5) {
-            this.marker.x = this.layer.getTileX(this.game.input.activePointer.worldX) * 100;
-            this.marker.y = this.layer.getTileY(this.game.input.activePointer.worldY) * 100;
+    // addItem() {
+    //     this.counter++;
+    //     let tmpItem = {
+    //         _id: this.counter,
+    //         tileImageId: this.counter,
+    //         x: 0,
+    //         y: 0,
+    //         uuid: uuid.v4(),
+    //         isMatched: false,
+    //         canFlip: true
+    //     };
+    //     console.log('tmpItem: ', tmpItem);
+    //     this.store.dispatch(addItem(tmpItem));
+    //     this.newItem = '';
+    // }
+
+initialState() {
+    this.levelArray = [];
+    this.shuffledLevelArray = [];
+    this.shuffledLevelArray = Phaser.ArrayUtils.shuffle(this.level_data);
+    
+};
+
+preload() {
+    this.game.load.tilemap('matching', 'app/matching/assets/adventure_time.json', null, Phaser.Tilemap.TILED_JSON);
+    // this.game.load.image('tiles', 'app/matching/assets/phaser_tiles.png');
+    // this.game.load.tilemap('matching', 'app/matching/assets/phaser_tiles.json', null, Phaser.Tilemap.TILED_JSON);
+    this.game.load.image('tiles', 'app/matching/assets/adventure_time.png');
+    // this.game.load.text('level_1_data', 'app/data/level_1.json');
+    this.game.load.text('level_data', 'app/matching/data/level_data.json');
+    this.game.load.script('filter', 'https://cdn.rawgit.com/photonstorm/phaser/master/filters/Fire.js');
+    this.level_data = JSON.parse(this.game.cache.getText('level_data'));
+};
+
+create() {
+    this.gameState = this.initialState();
+    this.background = this.game.add.sprite(600, 0);
+    this.background.width = 300;
+    this.background.height = 600;
+    let {fromJS, List, Map} = Immutable;
+    // let level_1_data = JSON.parse(this.game.cache.getText('level_1_data'));
+    this.stateHistory = [];
+    
+    this.flippedTileCounter = 0;
+
+    // this.gameState = Immutable.Map({
+    //     tiles: Immutable.List()
+    // });
+    // console.log('this.gameState: ', this.gameState);
+    // this.stateHistory.push(this.gameState);
+
+
+
+
+
+
+    this.game.input.mouse.capture = true;
+    this.game.input.onTap.add(MatchingGame.prototype.onTap, this);
+    this.map = this.game.add.tilemap('matching');
+    this.map.addTilesetImage('adventure_time', 'tiles');
+    this.layer = this.map.createLayer('TileLayer1');
+    this.marker = this.game.add.graphics(0, 0);
+    this.marker.lineStyle(2, 0x00FF00, 1);
+    this.marker.drawRect(0, 0, 100, 100);
+    for (let col = 0; col < 6; col++) {
+        for (let row = 0; row < 6; row++) {
+            this.map.putTile(36, col, row);
         }
-        this.filter.update();
     }
+    this.filter = this.game.add.filter('Fire', 900, 600);
+    this.filter.alpha = 0.0;
+    this.background.filters = [this.filter];
+};
 
-    render() {
-        // this.game.debug.text(timesUp, 620, 208, 'rgb(0,255,0)');
-        // game.debug.text(youWin, 620, 240, 'rgb(0,255,0)');
-
-        this.game.debug.text('Player Name: ' + this.gameState.get('playerName'), 620, 30, 'rgb(0,255,0)');
-        this.game.debug.text('Turns Taken: ' + this.gameState.get('turnsTaken'), 620, 60, 'rgb(0,255,0)');
-        this.game.debug.text('Matched Pairs: ' + this.gameState.get('tilePairsMatched'), 620, 90, 'rgb(0,255,0)');
-        // this.game.debug.text('Pairs Remaining: ' + ((this.gameState.get('tiles').length - this.gameState.get('tilePairsMatched')) / 2), 620, 120, 'rgb(0,255,0)');
-        //game.debug.text('startList: ' + myString1, 620, 208, 'rgb(255,0,0)');
-        //game.debug.text('squareList: ' + myString2, 620, 240, 'rgb(255,0,0)');
-
-
-        // game.debug.text('Tile: ' + map.getTile(layer.getTileX(marker.x), layer.getTileY(marker.y)).index, 620, 48, 'rgb(255,0,0)');
-
-        // game.debug.text('LayerX: ' + layer.getTileX(marker.x), 620, 80, 'rgb(255,0,0)');
-        // game.debug.text('LayerY: ' + layer.getTileY(marker.y), 620, 112, 'rgb(255,0,0)');
-
-        // game.debug.text('Tile Position: ' + currentTilePosition, 620, 144, 'rgb(255,0,0)');
-        // game.debug.text('Hidden Tile: ' + getHiddenTile(), 620, 176, 'rgb(255,0,0)');
+update() {
+    if (this.layer.getTileX(this.game.input.activePointer.worldX) <= 5) {
+        this.marker.x = this.layer.getTileX(this.game.input.activePointer.worldX) * 100;
+        this.marker.y = this.layer.getTileY(this.game.input.activePointer.worldY) * 100;
     }
+    this.filter.update();
+}
 
-    onTap(pointer: any, tap: any) {
-        this.timer = this.game.time.create(true);
-        this.flippedTileCounter++;
-        this.currentTile = {};
-        let tappedPosition = ((this.layer.getTileY(this.game.input.activePointer.worldY) + 1) * 6) - (6 - (this.layer.getTileX(this.game.input.activePointer.worldX) + 1));
-        console.log('tapPosition: ', tappedPosition);
+render() {
+    this.game.debug.text('Player Name: ' + this.gameState.get('playerName'), 620, 30, 'rgb(0,255,0)');
+    this.game.debug.text('Turns Taken: ' + this.gameState.get('turnsTaken'), 620, 60, 'rgb(0,255,0)');
+    this.game.debug.text('Matched Pairs: ' + this.gameState.get('tilePairsMatched'), 620, 90, 'rgb(0,255,0)');
+}
 
-        let hiddenTileId = this.gameState.get('tiles').get(tappedPosition - 1).get('tileImageId');
-        // let hiddenTileId = this.shuffledLevelArray[tappedPosition - 1];
-        console.log('hiddenTileId: ', hiddenTileId);
-        // example for console this.gameState.get('tiles').map(function(tile){console.log(tile.get('isflipped'))})   
+onTap(pointer: any, tap: any) {
+    this.timer = this.game.time.create(true);
+    this.flippedTileCounter++;
+    this.currentTile = {};
+    let tappedPosition = ((this.layer.getTileY(this.game.input.activePointer.worldY) + 1) * 6) - (6 - (this.layer.getTileX(this.game.input.activePointer.worldX) + 1));
+    console.log('tapPosition: ', tappedPosition);
 
-        console.log('this.stateHistory: ', this.stateHistory);
+    let hiddenTileId = this.gameState.get('tiles').get(tappedPosition - 1).get('tileImageId');
+    // let hiddenTileId = this.shuffledLevelArray[tappedPosition - 1];
+    console.log('hiddenTileId: ', hiddenTileId);
+    // example for console this.gameState.get('tiles').map(function(tile){console.log(tile.get('isflipped'))})   
 
-        // example console.log('state1.get by index: ', state1.get('tiles').get(4).get('guid'));
-        console.log('get hidden tile by id: ', this.gameState.get('tiles').get(hiddenTileId).get('guid'));
+    console.log('this.stateHistory: ', this.stateHistory);
 
-        if (this.flippedTileCounter === 2) {
-            console.log('flippedTileCounter: ', this.flippedTileCounter);
-            this.secondFlippedTile = {
-                x: this.layer.getTileX(this.marker.x),
-                y: this.layer.getTileY(this.marker.y),
-                isFlipped: true,
-                id: hiddenTileId
-            };
-            this.map.putTile(hiddenTileId, this.secondFlippedTile.x, this.secondFlippedTile.y);
-            this.currentTile = this.map.getTile(this.secondFlippedTile.x, this.secondFlippedTile.y);
-            if (this.firstFlippedTile.id === this.secondFlippedTile.id) {
-                this.firstFlippedTile.isMatched = true;
-                this.secondFlippedTile.isMatched = true;
-                if (this.gameState.get('tiles').get(hiddenTileId)) {
-                    this.stateHistory.push(this.gameState);
-                    this.gameState = this.gameState.setIn(['tiles', this.firstFlippedTile.id, 'isMatched'], true);
-                    this.gameState = this.gameState.setIn(['tiles', this.firstFlippedTile.id, 'canFlip'], false);
-                    this.gameState = this.gameState.setIn(['tiles', this.secondFlippedTile.id, 'isMatched'], true);
-                    this.gameState = this.gameState.setIn(['tiles', this.firstFlippedTile.id, 'canFlip'], false);
-                    this.gameState = this.gameState.update('tilePairsMatched', (v: any) => v + 1);
-                    this.gameState = this.gameState.update('turnsTaken', (v: any) => v + 1);
-                    this.stateHistory.push(this.gameState);
-                    console.log('its a match!!!');
-                }
-            } else {
+    // example console.log('state1.get by index: ', state1.get('tiles').get(4).get('guid'));
+    console.log('get hidden tile by id: ', this.gameState.get('tiles').get(hiddenTileId).get('guid'));
+
+    if (this.flippedTileCounter === 2) {
+        console.log('flippedTileCounter: ', this.flippedTileCounter);
+        this.secondFlippedTile = {
+            x: this.layer.getTileX(this.marker.x),
+            y: this.layer.getTileY(this.marker.y),
+            isFlipped: true,
+            id: hiddenTileId
+        };
+        this.map.putTile(hiddenTileId, this.secondFlippedTile.x, this.secondFlippedTile.y);
+        this.currentTile = this.map.getTile(this.secondFlippedTile.x, this.secondFlippedTile.y);
+        if (this.firstFlippedTile.id === this.secondFlippedTile.id) {
+            this.firstFlippedTile.isMatched = true;
+            this.secondFlippedTile.isMatched = true;
+            if (this.gameState.get('tiles').get(hiddenTileId)) {
+                this.stateHistory.push(this.gameState);
+                this.gameState = this.gameState.setIn(['tiles', this.firstFlippedTile.id, 'isMatched'], true);
+                this.gameState = this.gameState.setIn(['tiles', this.firstFlippedTile.id, 'canFlip'], false);
+                this.gameState = this.gameState.setIn(['tiles', this.secondFlippedTile.id, 'isMatched'], true);
+                this.gameState = this.gameState.setIn(['tiles', this.firstFlippedTile.id, 'canFlip'], false);
+                this.gameState = this.gameState.update('tilePairsMatched', (v: any) => v + 1);
                 this.gameState = this.gameState.update('turnsTaken', (v: any) => v + 1);
                 this.stateHistory.push(this.gameState);
+                console.log('its a match!!!');
             }
-            console.log('firstFlippedTile.Id: ', this.firstFlippedTile.id);
-            console.log('secondFlippedTile.Id: ', this.secondFlippedTile.id);
-            console.log('turnsTaken: ', this.gameState.get('turnsTaken'));
-            console.log('Matched Pairs: ', this.gameState.get('tilePairsMatched'));
-            console.log('Hidden Tile, this.currentTile: ', this.currentTile);
-            this.game.input.mouse.enabled = false;
-            this.timer.start();
         } else {
-            console.log('flippedTileCounter: ', this.flippedTileCounter);
-            this.firstFlippedTile = {
-                x: this.layer.getTileX(this.marker.x),
-                y: this.layer.getTileY(this.marker.y),
-                isFlipped: true,
-                id: hiddenTileId
-            };
-            this.map.putTile(hiddenTileId, this.firstFlippedTile.x, this.firstFlippedTile.y);
-            this.currentTile = this.map.getTile(this.firstFlippedTile.x, this.firstFlippedTile.y);
-            console.log('Hidden Tile, this.currentTile: ', this.currentTile);
+            this.gameState = this.gameState.update('turnsTaken', (v: any) => v + 1);
+            this.stateHistory.push(this.gameState);
+        }
+        console.log('firstFlippedTile.Id: ', this.firstFlippedTile.id);
+        console.log('secondFlippedTile.Id: ', this.secondFlippedTile.id);
+        console.log('turnsTaken: ', this.gameState.get('turnsTaken'));
+        console.log('Matched Pairs: ', this.gameState.get('tilePairsMatched'));
+        console.log('Hidden Tile, this.currentTile: ', this.currentTile);
+        this.game.input.mouse.enabled = false;
+        this.timer.start();
+    } else {
+        console.log('flippedTileCounter: ', this.flippedTileCounter);
+        this.firstFlippedTile = {
+            x: this.layer.getTileX(this.marker.x),
+            y: this.layer.getTileY(this.marker.y),
+            isFlipped: true,
+            id: hiddenTileId
         };
-        this.timer.loop(1500, flipBack, this);
+        this.map.putTile(hiddenTileId, this.firstFlippedTile.x, this.firstFlippedTile.y);
+        this.currentTile = this.map.getTile(this.firstFlippedTile.x, this.firstFlippedTile.y);
+        console.log('Hidden Tile, this.currentTile: ', this.currentTile);
     };
-
+    this.timer.loop(1500, flipBack, this);
+};
 }
 // end of class
 
@@ -277,7 +229,4 @@ function flipBack() {
     this.secondFlippedTile = {};
     this.game.input.mouse.enabled = true;
     this.timer.stop();
-
 }
-
-
