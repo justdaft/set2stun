@@ -15,6 +15,8 @@ export class StateItem {
   setItem(value: ITile) {
     return new StateItem(this._data.set('item', value));
   }
+  
+  
 
   // get completed() {
   //   return <boolean> this._data.get('completed');

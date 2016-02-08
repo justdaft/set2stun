@@ -15,6 +15,8 @@ export function reducer(state: List<StateItem> = List<StateItem>(), action: IGam
             return List<StateItem>(state.filter((i: StateItem) => i.uuid !== action.itemId));
         case 'CREATE_NEW_GAME': 
             return  ;
+        case 'UPDATE_TILE':
+            return ;
         // case 'UPDATE_ITEM_TEXT':
         //   return state.update(indexOf(action.itemId), (i: TodoItem) => i.setText(action.item));
         // case 'UPDATE_ITEM_COMPLETION':

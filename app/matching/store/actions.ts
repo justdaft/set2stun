@@ -14,6 +14,13 @@ export function removeItem(itemId: string): IGameStateAction {
   };
 }
 
+export function updateTile(itemId: string): IGameStateAction {
+  return {
+    type: 'UPDATE_TILE',
+    itemId
+  };
+}
+
 // export function updateItemText(itemId: string, text: string): ITodoAction {
 //   return {
 //     type: 'UPDATE_ITEM_TEXT',
