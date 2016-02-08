@@ -5,8 +5,8 @@ import StateStore from '../store/statestore';
 
 @Component({
   selector: 'state-list',
-  templateUrl: 'app/devtools/statelist.html',
-  styleUrls: ['app/devtools/statelist.css'],
+  templateUrl: 'app/matching/devtools/statelist.html',
+  styleUrls: ['app/matching/devtools/statelist.css'],
   pipes: [StringifyPipe]
 })
 export default class StateList {

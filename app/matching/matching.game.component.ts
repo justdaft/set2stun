@@ -1,35 +1,24 @@
+import {Component, OnInit} from 'angular2/core';
+import StateStore from './store/statestore';
+import {ITile} from './matching.game.models';
+import StateList from './devtools/statelist';
+import {addItem, removeItem} from './store/actions';
 
-interface ITile {
-    id?: any;
-    _id?: number;
-    tileImageId?: number;
-    guid?: any;
-    isMatched?: boolean;
-    coverTileId?: number;
-    x?: number;
-    y?: number;
-    isFlipped?: boolean;
-    tilePosition?: number;
-    hiddenTileId?: number;
-    canFlip?: boolean;
-    canTap?: boolean;
-}
+@Component({
+    selector: 'matching-game',
+    templateUrl: 'app/matching/matching.game.component.html',
+    styleUrls: ['app/matching/matching.game.component.css'],
+    directives: [StateList]
+})
 
-interface ITileObj {
-    id?: any;
-    x?: number;
-    y?: number;
-    isFliped?: boolean;
-    tilePosition?: number;
-    tileRef?: number;
-    isMatched?: boolean;
-    tile?: any;
-    coverTileIndex?: number;
-}
-
-export class MatchingGame {
-
+export class MatchingGame implements OnInit {
     game: Phaser.Game;
+    store: StateStore;
+    currentGame: any;
+    newItem = 'test';
+    counter: number = 0;
+
+
     map: Phaser.Tilemap;
     layer: Phaser.TilemapLayer;
     timeCheck = 0;
@@ -41,8 +30,7 @@ export class MatchingGame {
 
     tileset: any;
     marker: any;
-    currentMarker: ITile;
-    currentTile: ITile;
+
     currentTilePosition: any;
     tileBack: number = 25;
     timesUp: any = '+';
@@ -51,12 +39,9 @@ export class MatchingGame {
     turnCounter: number;
     currentTiles: Array<any>;
     tileGrid: Array<any>;
-    tilesList: Array<ITileObj>;
-
     levelArray: Array<any>;
     shuffledLevelArray: Array<any>;
-    unmatchedTile1: any;
-    unmatchedTile2: any;
+    currentTile: any;
     firstFlippedTile: ITile;
     secondFlippedTile: ITile;
     flippedTileCounter: number;
@@ -68,29 +53,31 @@ export class MatchingGame {
     background: any;
     filter: any;
 
-    constructor() {
+    constructor(store: StateStore) {
+        this.store = store;
         this.game = new Phaser.Game(900, 600, Phaser.AUTO, 'content', {
-            create: this.create,
             preload: this.preload,
+            create: this.create,
             update: this.update,
             render: this.render
         });
     };
 
+    ngOnInit() { 
+        //
+    };
+
     preload() {
         this.game.load.tilemap('matching', 'app/matching/assets/adventure_time.json', null, Phaser.Tilemap.TILED_JSON);
         // this.game.load.image('tiles', 'app/matching/assets/phaser_tiles.png');
-
         // this.game.load.tilemap('matching', 'app/matching/assets/phaser_tiles.json', null, Phaser.Tilemap.TILED_JSON);
         this.game.load.image('tiles', 'app/matching/assets/adventure_time.png');
-
         // this.game.load.text('level_1_data', 'app/data/level_1.json');
         this.game.load.text('level_data', 'app/matching/data/level_data.json');
         this.game.load.script('filter', 'https://cdn.rawgit.com/photonstorm/phaser/master/filters/Fire.js');
 
     };
 
-    // start of create
     create() {
         this.background = this.game.add.sprite(600, 0);
         this.background.width = 300;
@@ -161,14 +148,13 @@ export class MatchingGame {
         this.background.filters = [this.filter];
     };
 
-    // end of create
     update() {
         if (this.layer.getTileX(this.game.input.activePointer.worldX) <= 5) {
             this.marker.x = this.layer.getTileX(this.game.input.activePointer.worldX) * 100;
             this.marker.y = this.layer.getTileY(this.game.input.activePointer.worldY) * 100;
         }
         this.filter.update();
-    }
+    };
 
     render() {
         // this.game.debug.text(timesUp, 620, 208, 'rgb(0,255,0)');
@@ -189,7 +175,7 @@ export class MatchingGame {
 
         // game.debug.text('Tile Position: ' + currentTilePosition, 620, 144, 'rgb(255,0,0)');
         // game.debug.text('Hidden Tile: ' + getHiddenTile(), 620, 176, 'rgb(255,0,0)');
-    }
+    };
 
     onTap(pointer: any, tap: any) {
         this.timer = this.game.time.create(true);
@@ -256,28 +242,43 @@ export class MatchingGame {
             console.log('Hidden Tile, this.currentTile: ', this.currentTile);
         };
         this.timer.loop(1500, flipBack, this);
+
+        function flipBack() {
+            console.log('flipOver');
+            this.flipFlag = false;
+            if (!this.firstFlippedTile.isMatched && !this.secondFlippedTile.isMatched) {
+                this.map.putTile(36, this.firstFlippedTile.x, this.firstFlippedTile.y);
+                this.map.putTile(36, this.secondFlippedTile.x, this.secondFlippedTile.y);
+            }
+            this.flippedTileCounter = 0;
+            this.firstFlippedTile = {};
+            this.secondFlippedTile = {};
+            this.game.input.mouse.enabled = true;
+            this.timer.stop();
+
+        };
     };
 
+
+    addItem() {
+        this.counter++;
+        let tmpItem = {
+            _id: this.counter,
+            tileImageId: this.counter,
+            x: 0,
+            y: 0,
+            uuid: uuid.v4(),
+            isMatched: false,
+            canFlip: true
+        };
+        console.log('tmpItem: ', tmpItem);
+        this.store.dispatch(addItem(tmpItem));
+        this.newItem = '';
+    };
+
+
+
+    revealTile(game: any, tile: any) {
+        // console.log(game.getIn(['tiles', tile]));
+    };
 }
-// end of class
-
-function revealTile(game: any, tile: any) {
-    // console.log(game.getIn(['tiles', tile]));
-}
-
-function flipBack() {
-    console.log('flipOver');
-    this.flipFlag = false;
-    if (!this.firstFlippedTile.isMatched && !this.secondFlippedTile.isMatched) {
-        this.map.putTile(36, this.firstFlippedTile.x, this.firstFlippedTile.y);
-        this.map.putTile(36, this.secondFlippedTile.x, this.secondFlippedTile.y);
-    }
-    this.flippedTileCounter = 0;
-    this.firstFlippedTile = {};
-    this.secondFlippedTile = {};
-    this.game.input.mouse.enabled = true;
-    this.timer.stop();
-
-}
-
-

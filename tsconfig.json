@@ -1,47 +1,47 @@
 {
-  "compilerOptions": {
-    "outDir": "dist/app",
-    "target": "ES5",
-    "module": "system",
-    "sourceMap": true,
-    "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
-    "moduleResolution": "node",
-    "removeComments": false,
-    "noImplicitAny": true,
-    "suppressImplicitAnyIndexErrors": true
-  },
-  "filesGlob": [
-    "app/**/*.ts",
-    "app/**/**/*.ts",
-    "typings/**/*.d.ts"
-  ],
-  "files": [
-    "app/app.component.ts",
-    "app/boot.ts",
-    "app/devtools/rollbackaction.ts",
-    "app/devtools/statelist.ts",
-    "app/devtools/statemonitor.ts",
-    "app/devtools/stringify.ts",
-    "app/fazer/fazer.ts",
-    "app/game.component.ts",
-    "app/game.ts",
-    "app/matching/matching.game.ts",
-    "app/store/actions.ts",
-    "app/store/reducer.ts",
-    "app/store/stateitem.ts",
-    "app/store/statestore.ts",
-    "app/util.ts",
-    "typings/immutable.d.ts",
-    "typings/main.d.ts",
-    "typings/node-uuid/node-uuid-base.d.ts",
-    "typings/node-uuid/node-uuid-global.d.ts",
-    "typings/p2.d.ts",
-    "typings/phaser.d.ts",
-    "typings/pixi.d.ts",
-    "typings/redux/redux.d.ts"
-  ],
-  "atom": {
-    "rewriteTsconfig": true
-  }
+    "compilerOptions": {
+        "outDir": "dist/app",
+        "target": "ES5",
+        "module": "system",
+        "sourceMap": true,
+        "emitDecoratorMetadata": true,
+        "experimentalDecorators": true,
+        "moduleResolution": "node",
+        "removeComments": false,
+        "noImplicitAny": true,
+        "suppressImplicitAnyIndexErrors": true
+    },
+    "filesGlob": [
+        "app/**/*.ts",
+        "app/**/**/*.ts",
+        "typings/**/*.d.ts"
+    ],
+    "files": [
+        "app/app.component.ts",
+        "app/bootstrap.ts",
+        "app/fazer/fazer.ts",
+        "app/game.ts",
+        "app/util.ts",
+        "app/matching/devtools/rollbackaction.ts",
+        "app/matching/devtools/statelist.ts",
+        "app/matching/devtools/statemonitor.ts",
+        "app/matching/devtools/stringify.ts",
+        "app/matching/matching.game.models.ts",
+        "app/matching/matching.game.component.ts",
+        "app/matching/store/actions.ts",
+        "app/matching/store/reducer.ts",
+        "app/matching/store/stateitem.ts",
+        "app/matching/store/statestore.ts",
+        "typings/immutable.d.ts",
+        "typings/main.d.ts",
+        "typings/node-uuid/node-uuid-base.d.ts",
+        "typings/node-uuid/node-uuid-global.d.ts",
+        "typings/p2.d.ts",
+        "typings/phaser.d.ts",
+        "typings/pixi.d.ts",
+        "typings/redux/redux.d.ts"
+    ],
+    "atom": {
+        "rewriteTsconfig": true
+    }
 }

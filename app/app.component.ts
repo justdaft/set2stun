@@ -1,13 +1,15 @@
 import {Component} from 'angular2/core';
-import {GameComponent} from './game.component';
+// import {Fazer} from './fazer';
+import {MatchingGame} from './matching/matching.game.component';
+
 
 
 @Component({
   selector: 'my-app',
   template: `
-    <my-game></my-game>   
+    <matching-game></matching-game>   
   `,
-  directives: [GameComponent],
+  directives: [MatchingGame],
   styles: [`
     a {padding: 5px;text-decoration: none;}
     a:visited, a:link {color: #444;}

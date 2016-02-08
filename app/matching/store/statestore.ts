@@ -2,7 +2,8 @@ import { Injectable } from 'angular2/core';
 import { List } from 'immutable';
 import { StateItem } from './stateitem';
 import { createStore, applyMiddleware } from 'redux';
-import { reducer, IGameStateAction } from './reducer';
+import { reducer } from './reducer';
+import { IGameStateAction } from '../matching.game.models';
 import StateMonitor from '../devtools/statemonitor';
 
 @Injectable()
